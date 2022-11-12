@@ -6,79 +6,79 @@
 _un_LED LED = {0};
 _User_Data User ={0};
 
-u8 g_Water_State_Flag = 0;//1£ºÒç³ö£¬0£ºÈ±Ë®
+u8 g_Water_State_Flag = 0;//1ï¼šæº¢å‡ºï¼Œ0ï¼šç¼ºæ°´
 
 void User_Time(void)
 {
 	User.Run_Time_ms++;
 	User.Run_Time++;
 }
-/*ÉÏµç×´Ì¬*/
+/*ä¸Šç”µçŠ¶æ€*/
 void User_Start(void)
 {
 	User.Mode = HYDROPENIA_STEP;
 }
-/*È±Ë®×´Ì¬*/
-void User_Hydropenia(void)/*KEY0--¼ÓË®°´Å¥*/
+/*ç¼ºæ°´çŠ¶æ€*/
+void User_Hydropenia(void)/*KEY0--åŠ æ°´æŒ‰é’®*/
 {
-	BEEP = 1;//±¨¾¯
-	LED0 = 0;//ºìµÄ
+	BEEP = 1;//æŠ¥è­¦
+	LED0 = 0;//çº¢çš„
 	LED1 = 1;
-	g_Water_State_Flag = 0;//È±Ë®
-	if (KEY0_PRES == KEY_Scan(0)) {/*µã»÷¼ÓË®¼ä----½øÈë¼ÓË®/È÷Ë®×´Ì¬*/
+	g_Water_State_Flag = 0;//ç¼ºæ°´
+	if (KEY0_PRES == KEY_Scan(0)) {/*ç‚¹å‡»åŠ æ°´é—´----è¿›å…¥åŠ æ°´/æ´’æ°´çŠ¶æ€*/
 		User.Run_Time = 0;
 		User.Run_Time_ms = 0;
-		BEEP = 0;//¹Ø±Õ±¨¾¯
+		BEEP = 0;//å…³é—­æŠ¥è­¦
 		LED0 = 1;
 		LED1 = 0;
 		User.Mode = WATER_STEP;
 	}
 }
-/*¼ÓË®/È÷Ë®×´Ì¬*/
+/*åŠ æ°´/æ´’æ°´çŠ¶æ€*/
 void User_Water()
-{					//±íÊ¾¡°ºì->ÂÌ¡±¼ÓË®
-	LED_Start(3);	//±íÊ¾¡°ÂÌ->ºì¡±È÷Ë®
+{					//è¡¨ç¤ºâ€œçº¢->ç»¿â€åŠ æ°´
+	LED_Start(3);	//è¡¨ç¤ºâ€œç»¿->çº¢â€æ´’æ°´
 	
 	if(User.Run_Time >= 1000) {
-		BEEP = 0;//¹Ø±Õ½Á°èÍê³ÉµÄÌáÊ¾Òô
+		BEEP = 0;//å…³é—­æ…æ‹Œå®Œæˆçš„æç¤ºéŸ³
 	}
 	
 	if (User.Run_Time >= 30000) {//30s
 		User.Run_Time = 0;
-		if (!g_Water_State_Flag) {//ÔÚÈ±Ë®µÄÇé¿öÏÂ30s¼ÓÂú
-			User.Mode = OVERFLOW_STEP;//½øÈë¼ÓÂú×´Ì¬±¨¾¯ÌáÊ¾
+		if (!g_Water_State_Flag) {//åœ¨ç¼ºæ°´çš„æƒ…å†µä¸‹30såŠ æ»¡
+			User.Mode = OVERFLOW_STEP;//è¿›å…¥åŠ æ»¡çŠ¶æ€æŠ¥è­¦æç¤º
 		}
 		else {
-			User.Mode = HYDROPENIA_STEP;//È±Ë®
+			User.Mode = HYDROPENIA_STEP;//ç¼ºæ°´
 		}
 	}
 }
-/*¼ÓÂú×´Ì¬*/
-void User_Overflow(void)/*KEY1--½Á°è°´Å¥*/
+/*åŠ æ»¡çŠ¶æ€*/
+void User_Overflow(void)/*KEY1--æ…æ‹ŒæŒ‰é’®*/
 {
 	BEEP = 1;
 	LED0 = 1;
 	LED1 = 0;
-	if ((KEY0_PRES == KEY_Scan(0))) {/*ÊÖ¶¯½øÈë½Á°è×´Ì¬*/
+	if ((KEY0_PRES == KEY_Scan(0))) {/*æ‰‹åŠ¨è¿›å…¥æ…æ‹ŒçŠ¶æ€*/
 		User.Run_Time_ms = 0;
 		User.Run_Time = 0;
 		BEEP = 0;
-		User.Mode = STIR_STEP;/*µã»÷----½øÈë½Á°è×´Ì¬*/
+		User.Mode = STIR_STEP;/*ç‚¹å‡»----è¿›å…¥æ…æ‹ŒçŠ¶æ€*/
 	}
 }
-/*½Á°è×´Ì¬*/
+/*æ…æ‹ŒçŠ¶æ€--*/
 void User_Stir(void)
 {
-	LED_Start(4);//-±íÊ¾µç»ú½Á°è
+	LED_Start(4);//-è¡¨ç¤ºç”µæœºæ…æ‹Œ
 	
 	if (User.Run_Time >= 60000) {//1min
 		User.Run_Time_ms = 0;
 		User.Run_Time = 0;
-		User.Mode = WATER_STEP;/*È÷Ë®×´Ì¬*/
+		User.Mode = WATER_STEP;/*æ´’æ°´çŠ¶æ€*/
 		g_Water_State_Flag = 1;
 		LED0 = 0;
 		LED1 = 1;
-		BEEP = 1;//ÌáÊ¾Òô
+		BEEP = 1;//æç¤ºéŸ³
 	}
 }
 
@@ -87,27 +87,27 @@ void User_Run(void)
 {
 	switch (User.Mode)
     {
-		case START_STEP:			//ÉÏµç×´Ì¬
+		case START_STEP:			//ä¸Šç”µçŠ¶æ€
             
 			User_Start();
 		break;
 		
-		case HYDROPENIA_STEP:		//È±Ë®
+		case HYDROPENIA_STEP:		//ç¼ºæ°´
 		
 			User_Hydropenia();
 		break;
 #if(1)		
-		case OVERFLOW_STEP:			//Òç³ö
+		case OVERFLOW_STEP:			//æº¢å‡º
 		
 			User_Overflow();
 		break;
 		
-		case STIR_STEP:				//½Á°è
+		case STIR_STEP:				//æ…æ‹Œ
 		
 			User_Stir();
 		break;
 		
-		case WATER_STEP:			//¼ÓË®¡¢È÷Ë®
+		case WATER_STEP:			//åŠ æ°´ã€æ´’æ°´
 		
 			User_Water();
 		break;
@@ -115,6 +115,6 @@ void User_Run(void)
 	}
 }
 
-
+/********/
 
 
